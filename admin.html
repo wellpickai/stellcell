@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>어드민 | 셀이즈LAB 상담 관리</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;color:#2C2622;background:#F5F0EB;line-height:1.5;min-height:100vh}
+button{font-family:inherit;cursor:pointer;border:none;outline:none;background:none}
+input,select,textarea{font-family:inherit;outline:none;border:none}
+
+:root{
+  --primary:#3D2E22;
+  --primary-mid:#5C4A3D;
+  --accent:#A88968;
+  --gold:#C9A878;
+  --text:#2C2622;
+  --text-sub:#7A6B5E;
+  --text-light:#A89B8E;
+  --bg:#FFFFFF;
+  --bg-section:#F5F0EB;
+  --bg-card:#FAF6F1;
+  --bg-deep:#2C2520;
+  --border:#E8DFD3;
+  --danger:#B85042;
+  --success:#6B8E5A;
+}
+
+/* ========== 로그인 화면 ========== */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.login-card{background:#fff;border-radius:14px;padding:40px 32px;max-width:380px;width:100%;box-shadow:0 12px 40px rgba(60,46,34,0.12);border:1px solid var(--border)}
+.login-logo{text-align:center;margin-bottom:32px}
+.login-logo img{height:28px;margin:0 auto}
+.login-logo h1{font-size:20px;font-weight:800;color:var(--primary);margin-top:14px;letter-spacing:-0.02em}
+.login-logo p{font-size:12px;color:var(--text-sub);margin-top:6px;letter-spacing:0.05em}
+.login-input{width:100%;padding:14px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;font-size:14px;font-weight:500;color:var(--primary);margin-bottom:14px}
+.login-input:focus{border-color:var(--accent);background:#fff}
+.login-btn{width:100%;padding:14px;background:var(--primary);color:#fff;border-radius:8px;font-size:14px;font-weight:700;letter-spacing:-0.01em}
+.login-btn:hover{background:var(--primary-mid)}
+.login-hint{margin-top:18px;font-size:11px;color:var(--text-light);text-align:center;line-height:1.6}
+.login-hint code{background:var(--bg-card);padding:2px 6px;border-radius:4px;color:var(--accent);font-size:11px}
+
+/* ========== 대시보드 ========== */
+.dash-header{background:#fff;border-bottom:1px solid var(--border);padding:16px 24px;position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between}
+.dash-header-left{display:flex;align-items:center;gap:12px}
+.dash-header img{height:22px}
+.dash-header h1{font-size:14px;font-weight:700;color:var(--primary);letter-spacing:-0.01em}
+.dash-header h1 span{color:var(--accent);font-weight:600;margin-left:6px}
+.dash-logout{font-size:12px;color:var(--text-sub);padding:6px 12px;border:1px solid var(--border);border-radius:6px;font-weight:600}
+.dash-logout:hover{color:var(--primary);border-color:var(--accent)}
+
+.dash-tabs{display:flex;background:#fff;border-bottom:1px solid var(--border);padding:0 24px;gap:24px;position:sticky;top:55px;z-index:49}
+.dash-tab{padding:14px 0;font-size:13px;font-weight:600;color:var(--text-sub);position:relative;letter-spacing:-0.01em}
+.dash-tab.active{color:var(--primary)}
+.dash-tab.active::after{content:"";position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--accent)}
+.dash-tab .badge{display:inline-block;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;margin-left:4px;min-width:18px;text-align:center}
+
+.dash-main{padding:20px 24px 60px;max-width:900px;margin:0 auto}
+
+/* ========== 통계 카드 ========== */
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+.stat-card{background:#fff;border-radius:10px;padding:16px;text-align:center;border:1px solid var(--border)}
+.stat-num{font-size:24px;font-weight:800;color:var(--primary);letter-spacing:-0.02em;line-height:1}
+.stat-label{font-size:11px;color:var(--text-sub);font-weight:600;margin-top:6px;letter-spacing:0.05em}
+
+/* ========== 액션 바 ========== */
+.action-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.action-btn{padding:10px 16px;background:#fff;border:1px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;color:var(--primary);transition:all 0.2s}
+.action-btn:hover{border-color:var(--accent);color:var(--accent)}
+.action-btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+.action-btn.primary:hover{background:var(--primary-mid);color:#fff}
+.action-btn.danger{color:var(--danger)}
+.action-btn.danger:hover{background:#FFF0EE;border-color:var(--danger)}
+.search-input{flex:1;min-width:160px;padding:10px 14px;background:#fff;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--primary)}
+
+/* ========== 테이블 / 리스트 ========== */
+.list-card{background:#fff;border-radius:12px;border:1px solid var(--border);overflow:hidden}
+.inquiry{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:14px;transition:background 0.2s}
+.inquiry:last-child{border-bottom:none}
+.inquiry:hover{background:var(--bg-card)}
+.inquiry-num{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:var(--bg-section);color:var(--text-sub);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.inquiry-body{flex:1;min-width:0}
+.inquiry-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.inquiry-name{font-size:15px;font-weight:700;color:var(--primary);letter-spacing:-0.01em}
+.inquiry-phone{font-size:13px;color:var(--text-sub);font-weight:500}
+.inquiry-tag{display:inline-block;font-size:10px;font-weight:700;padding:3px 8px;border-radius:3px;letter-spacing:0.05em;background:var(--bg-card);color:var(--accent);border:1px solid var(--border)}
+.inquiry-tag.event2{background:var(--primary);color:#fff;border-color:var(--primary)}
+.inquiry-meta{font-size:11px;color:var(--text-light);margin-top:6px;line-height:1.5}
+.inquiry-option{font-size:12px;color:var(--primary-mid);font-weight:600;margin-top:4px}
+.inquiry-actions{flex-shrink:0;display:flex;gap:6px;align-items:center}
+.inquiry-action{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--text-sub);transition:all 0.2s}
+.inquiry-action:hover{background:var(--bg-card);color:var(--primary)}
+.inquiry-action.delete:hover{background:#FFF0EE;color:var(--danger)}
+
+.empty{text-align:center;padding:60px 20px;color:var(--text-light);font-size:13px}
+.empty svg{margin:0 auto 14px;color:var(--text-light)}
+
+/* ========== 텔레그램 설정 ========== */
+.settings-card{background:#fff;border-radius:12px;padding:24px;border:1px solid var(--border);margin-bottom:16px}
+.settings-card h2{font-size:15px;font-weight:700;color:var(--primary);margin-bottom:6px;letter-spacing:-0.01em}
+.settings-card .desc{font-size:12px;color:var(--text-sub);line-height:1.7;margin-bottom:18px}
+.settings-row{margin-bottom:14px}
+.settings-label{font-size:11px;font-weight:700;color:var(--primary);margin-bottom:6px;display:block;letter-spacing:0.05em}
+.settings-input{width:100%;padding:12px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--primary);font-family:'SF Mono',Consolas,Monaco,monospace}
+.settings-input:focus{border-color:var(--accent);background:#fff}
+.settings-actions{display:flex;gap:8px;margin-top:18px}
+
+.guide-card{background:var(--bg-card);border-radius:10px;padding:18px;border:1px solid var(--border);margin-top:16px}
+.guide-card h3{font-size:13px;font-weight:700;color:var(--primary);margin-bottom:12px;letter-spacing:-0.01em}
+.guide-card ol{list-style:none;counter-reset:step;padding:0}
+.guide-card li{counter-increment:step;font-size:12px;color:var(--text-sub);line-height:1.7;padding-left:28px;position:relative;margin-bottom:10px}
+.guide-card li::before{content:counter(step);position:absolute;left:0;top:0;width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.guide-card code{background:#fff;padding:2px 6px;border-radius:4px;font-size:11px;color:var(--accent);border:1px solid var(--border);font-family:'SF Mono',Consolas,Monaco,monospace}
+.guide-card a{color:var(--accent);text-decoration:underline;font-weight:600}
+
+.status-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:14px;font-size:11px;font-weight:700;letter-spacing:0.02em}
+.status-pill.connected{background:#EDF5E7;color:var(--success)}
+.status-pill.disconnected{background:#FFF0EE;color:var(--danger)}
+.status-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+
+/* ========== 토스트 ========== */
+.toast{position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-100px);background:var(--primary);color:#fff;padding:12px 22px;border-radius:8px;font-size:13px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,0.2);z-index:9999;opacity:0;transition:all 0.4s ease}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.error{background:var(--danger)}
+.toast.success{background:var(--success)}
+
+/* 보이기/숨기기 */
+.hidden{display:none !important}
+
+/* 모바일 대응 */
+@media(max-width:520px){
+  .stat-grid{grid-template-columns:repeat(3,1fr);gap:8px}
+  .stat-num{font-size:20px}
+  .dash-main{padding:16px}
+  .inquiry{padding:14px 16px}
+  .dash-header{padding:14px 16px}
+  .dash-tabs{padding:0 16px;gap:18px}
+}
+</style>
+</head>
+<body>
+
+<!-- ========== 로그인 화면 ========== -->
+<div class="login-wrap" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <img id="loginLogo" alt="셀이즈LAB">
+      <h1>관리자 로그인</h1>
+      <p style="letter-spacing:0.15em">CELLIZE LAB · ADMIN</p>
+    </div>
+    <input type="password" class="login-input" id="passwordInput" placeholder="관리자 비밀번호" onkeydown="if(event.key==='Enter') login()">
+    <button class="login-btn" onclick="login()">로그인</button>
+    <p class="login-hint">
+      초기 비밀번호: <code>cellize2026</code><br>
+      로그인 후 [텔레그램 설정] 탭에서 변경하세요
+    </p>
+  </div>
+</div>
+
+<!-- ========== 대시보드 ========== -->
+<div id="dashboard" class="hidden">
+
+  <header class="dash-header">
+    <div class="dash-header-left">
+      <img id="dashLogo" alt="셀이즈LAB">
+      <h1>상담 관리 <span>ADMIN</span></h1>
+    </div>
+    <button class="dash-logout" onclick="logout()">로그아웃</button>
+  </header>
+
+  <div class="dash-tabs">
+    <button class="dash-tab active" data-tab="inquiries" onclick="switchTab('inquiries')">
+      신청 목록 <span class="badge" id="tabBadge">0</span>
+    </button>
+    <button class="dash-tab" data-tab="telegram" onclick="switchTab('telegram')">
+      텔레그램 설정
+    </button>
+    <button class="dash-tab" data-tab="account" onclick="switchTab('account')">
+      계정 설정
+    </button>
+  </div>
+
+  <main class="dash-main">
+
+    <!-- 신청 목록 탭 -->
+    <div id="tab-inquiries">
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-num" id="statTotal">0</div>
+          <div class="stat-label">전체 신청</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statEvent1">0</div>
+          <div class="stat-label">EVENT 01 (PRP)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statEvent2">0</div>
+          <div class="stat-label">EVENT 02 (PRF)</div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <input type="search" class="search-input" id="searchInput" placeholder="이름·연락처 검색" oninput="render()">
+        <button class="action-btn" onclick="exportCSV()">CSV 다운로드</button>
+        <button class="action-btn danger" onclick="clearAll()">전체 삭제</button>
+      </div>
+
+      <div class="list-card" id="inquiryList"></div>
+    </div>
+
+    <!-- 텔레그램 설정 탭 -->
+    <div id="tab-telegram" class="hidden">
+      <div class="settings-card">
+        <h2>텔레그램 봇 연동</h2>
+        <p class="desc">신규 상담 신청 시 텔레그램으로 즉시 알림을 받을 수 있습니다. <span id="tgStatus" class="status-pill disconnected">미연결</span></p>
+
+        <div class="settings-row">
+          <label class="settings-label">BOT TOKEN</label>
+          <input type="text" class="settings-input" id="tgToken" placeholder="123456789:ABCdef...">
+        </div>
+        <div class="settings-row">
+          <label class="settings-label">CHAT ID</label>
+          <input type="text" class="settings-input" id="tgChatId" placeholder="123456789 또는 -100123456789">
+        </div>
+
+        <div class="settings-actions">
+          <button class="action-btn primary" onclick="saveTelegramConfig()">저장</button>
+          <button class="action-btn" onclick="testTelegram()">테스트 전송</button>
+          <button class="action-btn danger" onclick="clearTelegramConfig()">설정 초기화</button>
+        </div>
+      </div>
+
+      <div class="guide-card">
+        <h3>📱 텔레그램 봇 설정 가이드</h3>
+        <ol>
+          <li>텔레그램에서 <a href="https://t.me/BotFather" target="_blank">@BotFather</a> 검색 후 대화 시작</li>
+          <li><code>/newbot</code> 입력 → 봇 이름·아이디 입력 → <strong>BOT TOKEN</strong> 발급</li>
+          <li>새로 만든 봇과 대화 시작 후 아무 메시지나 전송 (그룹이면 봇을 그룹에 초대)</li>
+          <li><a href="https://t.me/userinfobot" target="_blank">@userinfobot</a>으로 본인 또는 그룹의 <strong>CHAT ID</strong> 확인</li>
+          <li>위에 입력 → [저장] → [테스트 전송]으로 정상 작동 확인</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- 계정 설정 탭 -->
+    <div id="tab-account" class="hidden">
+      <div class="settings-card">
+        <h2>비밀번호 변경</h2>
+        <p class="desc">관리자 비밀번호를 변경합니다. 분실 시 브라우저 데이터를 초기화해야 하므로 안전하게 보관하세요.</p>
+
+        <div class="settings-row">
+          <label class="settings-label">현재 비밀번호</label>
+          <input type="password" class="settings-input" id="curPw">
+        </div>
+        <div class="settings-row">
+          <label class="settings-label">새 비밀번호</label>
+          <input type="password" class="settings-input" id="newPw" placeholder="6자 이상">
+        </div>
+        <div class="settings-row">
+          <label class="settings-label">새 비밀번호 확인</label>
+          <input type="password" class="settings-input" id="newPw2">
+        </div>
+
+        <div class="settings-actions">
+          <button class="action-btn primary" onclick="changePassword()">비밀번호 변경</button>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <h2>데이터 백업 / 복원</h2>
+        <p class="desc">신청 데이터를 JSON 파일로 백업하거나 복원합니다.</p>
+        <div class="settings-actions">
+          <button class="action-btn primary" onclick="exportJSON()">JSON 백업</button>
+          <button class="action-btn" onclick="document.getElementById('importFile').click()">JSON 복원</button>
+          <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============== 로고 ==============
+const LOGO_COLOR_URL = "logo_color.png";
+document.getElementById('loginLogo').src = LOGO_COLOR_URL;
+document.getElementById('dashLogo').src = LOGO_COLOR_URL;
+
+// ============== 인증 ==============
+const DEFAULT_PW = 'cellize2026';
+
+function getStoredPw(){
+  return localStorage.getItem('cellize_admin_pw') || DEFAULT_PW;
+}
+
+function login(){
+  const input = document.getElementById('passwordInput');
+  if(input.value === getStoredPw()){
+    sessionStorage.setItem('cellize_admin_session', '1');
+    showDashboard();
+  }else{
+    showToast('비밀번호가 올바르지 않습니다','error');
+    input.value='';
+  }
+}
+
+function logout(){
+  sessionStorage.removeItem('cellize_admin_session');
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('dashboard').classList.add('hidden');
+  document.getElementById('passwordInput').value='';
+}
+
+function showDashboard(){
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
+  loadTelegramConfig();
+  render();
+}
+
+// 자동 로그인 체크
+if(sessionStorage.getItem('cellize_admin_session') === '1'){
+  showDashboard();
+}
+
+// ============== 토스트 ==============
+function showToast(msg, type=''){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ============== 탭 ==============
+function switchTab(name){
+  document.querySelectorAll('.dash-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  ['inquiries','telegram','account'].forEach(t => {
+    document.getElementById('tab-'+t).classList.toggle('hidden', t !== name);
+  });
+}
+
+// ============== 데이터 ==============
+function loadInquiries(){
+  return JSON.parse(localStorage.getItem('cellize_inquiries') || '[]');
+}
+function saveInquiries(list){
+  localStorage.setItem('cellize_inquiries', JSON.stringify(list));
+}
+
+function render(){
+  const list = loadInquiries();
+  const search = document.getElementById('searchInput').value.trim().toLowerCase();
+  const filtered = search ? list.filter(i =>
+    (i.name||'').toLowerCase().includes(search) ||
+    (i.phone||'').includes(search)
+  ) : list;
+
+  // 통계
+  document.getElementById('statTotal').textContent = list.length;
+  document.getElementById('statEvent1').textContent = list.filter(i => i.event && i.event.includes('EVENT 01')).length;
+  document.getElementById('statEvent2').textContent = list.filter(i => i.event && i.event.includes('EVENT 02')).length;
+  document.getElementById('tabBadge').textContent = list.length;
+
+  // 리스트
+  const wrap = document.getElementById('inquiryList');
+  if(filtered.length === 0){
+    wrap.innerHTML = `<div class="empty">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+      </svg>
+      ${search ? '검색 결과가 없습니다' : '아직 접수된 상담 신청이 없습니다'}
+    </div>`;
+    return;
+  }
+
+  wrap.innerHTML = filtered.map((item, idx) => {
+    const isEvent2 = item.event && item.event.includes('EVENT 02');
+    const tagClass = isEvent2 ? 'event2' : '';
+    const eventLabel = isEvent2 ? 'EVENT 02 · PRF' : 'EVENT 01 · PRP';
+    return `<div class="inquiry">
+      <div class="inquiry-num">${idx+1}</div>
+      <div class="inquiry-body">
+        <div class="inquiry-top">
+          <span class="inquiry-name">${escapeHtml(item.name)}</span>
+          <span class="inquiry-phone">${escapeHtml(item.phone)}</span>
+          <span class="inquiry-tag ${tagClass}">${eventLabel}</span>
+        </div>
+        ${item.option ? `<div class="inquiry-option">옵션: ${escapeHtml(item.option)}</div>` : ''}
+        <div class="inquiry-meta">${escapeHtml(item.time)} · ID: ${escapeHtml(item.id||'')}</div>
+      </div>
+      <div class="inquiry-actions">
+        <button class="inquiry-action" onclick="copyInquiry('${item.id}')" title="복사">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <rect x="9" y="9" width="13" height="13" rx="2"/>
+            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+          </svg>
+        </button>
+        <button class="inquiry-action" onclick="callPhone('${item.phone}')" title="전화">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+          </svg>
+        </button>
+        <button class="inquiry-action delete" onclick="deleteInquiry('${item.id}')" title="삭제">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-2 14a2 2 0 01-2 2H9a2 2 0 01-2-2L5 6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+          </svg>
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function copyInquiry(id){
+  const item = loadInquiries().find(i => i.id === id);
+  if(!item) return;
+  const text = `[셀이즈LAB 상담]
+이름: ${item.name}
+연락처: ${item.phone}
+이벤트: ${item.event}
+${item.option ? '옵션: '+item.option+'\n' : ''}신청시각: ${item.time}`;
+  navigator.clipboard.writeText(text).then(() => showToast('복사되었습니다','success'));
+}
+
+function callPhone(phone){
+  if(!phone) return;
+  window.location.href = 'tel:' + phone.replace(/-/g,'');
+}
+
+function deleteInquiry(id){
+  if(!confirm('이 신청을 삭제하시겠습니까?')) return;
+  const list = loadInquiries().filter(i => i.id !== id);
+  saveInquiries(list);
+  render();
+  showToast('삭제되었습니다','success');
+}
+
+function clearAll(){
+  if(!confirm('모든 상담 신청을 삭제하시겠습니까? 복구할 수 없습니다.')) return;
+  if(!confirm('정말 삭제하시겠습니까?')) return;
+  saveInquiries([]);
+  render();
+  showToast('전체 삭제되었습니다','success');
+}
+
+// ============== CSV / JSON 내보내기 ==============
+function exportCSV(){
+  const list = loadInquiries();
+  if(!list.length){ showToast('내보낼 데이터가 없습니다','error'); return; }
+  const header = ['번호','이름','연락처','이벤트','옵션','신청시각','ID'];
+  const rows = list.map((item,i) => [
+    i+1, item.name, item.phone, item.event, item.option||'', item.time, item.id||''
+  ]);
+  const csv = [header, ...rows].map(row =>
+    row.map(c => `"${String(c||'').replace(/"/g,'""')}"`).join(',')
+  ).join('\n');
+  // BOM 추가 (엑셀 한글 깨짐 방지)
+  const blob = new Blob(['\uFEFF'+csv], { type: 'text/csv;charset=utf-8;' });
+  downloadBlob(blob, `cellize_inquiries_${getDateStr()}.csv`);
+  showToast(`${list.length}건 다운로드 완료`,'success');
+}
+
+function exportJSON(){
+  const list = loadInquiries();
+  const blob = new Blob([JSON.stringify(list, null, 2)], { type: 'application/json' });
+  downloadBlob(blob, `cellize_backup_${getDateStr()}.json`);
+  showToast('백업 완료','success');
+}
+
+function importJSON(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try{
+      const data = JSON.parse(ev.target.result);
+      if(!Array.isArray(data)) throw new Error('잘못된 형식');
+      if(!confirm(`${data.length}건의 데이터를 복원합니다. 기존 데이터는 덮어씁니다. 계속할까요?`)) return;
+      saveInquiries(data);
+      render();
+      showToast('복원 완료','success');
+    }catch(err){
+      showToast('파일 형식이 올바르지 않습니다','error');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function getDateStr(){
+  const d = new Date();
+  return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
+// ============== 텔레그램 ==============
+function loadTelegramConfig(){
+  const cfg = JSON.parse(localStorage.getItem('cellize_telegram_cfg') || '{}');
+  document.getElementById('tgToken').value = cfg.token || '';
+  document.getElementById('tgChatId').value = cfg.chatId || '';
+  updateTelegramStatus(cfg.token && cfg.chatId);
+}
+
+function updateTelegramStatus(connected){
+  const pill = document.getElementById('tgStatus');
+  if(connected){
+    pill.className = 'status-pill connected';
+    pill.textContent = '연결됨';
+  }else{
+    pill.className = 'status-pill disconnected';
+    pill.textContent = '미연결';
+  }
+}
+
+function saveTelegramConfig(){
+  const token = document.getElementById('tgToken').value.trim();
+  const chatId = document.getElementById('tgChatId').value.trim();
+  if(!token || !chatId){
+    showToast('토큰과 채팅 ID를 모두 입력하세요','error');
+    return;
+  }
+  localStorage.setItem('cellize_telegram_cfg', JSON.stringify({ token, chatId }));
+  updateTelegramStatus(true);
+  showToast('저장되었습니다','success');
+}
+
+function clearTelegramConfig(){
+  if(!confirm('텔레그램 설정을 초기화하시겠습니까?')) return;
+  localStorage.removeItem('cellize_telegram_cfg');
+  document.getElementById('tgToken').value = '';
+  document.getElementById('tgChatId').value = '';
+  updateTelegramStatus(false);
+  showToast('초기화되었습니다','success');
+}
+
+async function testTelegram(){
+  const token = document.getElementById('tgToken').value.trim();
+  const chatId = document.getElementById('tgChatId').value.trim();
+  if(!token || !chatId){
+    showToast('토큰과 채팅 ID를 먼저 입력하세요','error');
+    return;
+  }
+  showToast('전송 중...');
+  try{
+    const text = `🧪 *셀이즈LAB 어드민 테스트 메시지*\n\n`+
+      `텔레그램 연동이 정상적으로 작동합니다.\n`+
+      `시각: ${new Date().toLocaleString('ko-KR')}`;
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'Markdown' })
+    });
+    const json = await res.json();
+    if(json.ok){
+      showToast('테스트 메시지 전송 성공!','success');
+      saveTelegramConfig();
+    }else{
+      showToast(`전송 실패: ${json.description||'알 수 없는 오류'}`,'error');
+    }
+  }catch(e){
+    showToast('네트워크 오류: '+e.message,'error');
+  }
+}
+
+// ============== 비밀번호 변경 ==============
+function changePassword(){
+  const cur = document.getElementById('curPw').value;
+  const np = document.getElementById('newPw').value;
+  const np2 = document.getElementById('newPw2').value;
+
+  if(cur !== getStoredPw()){ showToast('현재 비밀번호가 올바르지 않습니다','error'); return; }
+  if(np.length < 6){ showToast('새 비밀번호는 6자 이상이어야 합니다','error'); return; }
+  if(np !== np2){ showToast('새 비밀번호가 일치하지 않습니다','error'); return; }
+
+  localStorage.setItem('cellize_admin_pw', np);
+  document.getElementById('curPw').value='';
+  document.getElementById('newPw').value='';
+  document.getElementById('newPw2').value='';
+  showToast('비밀번호가 변경되었습니다','success');
+}
+</script>
+</body>
+</html>
