@@ -539,7 +539,13 @@ a{color:inherit;text-decoration:none}
 </div>
 
 <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+// ====== Supabase 설정 ======
+const SUPABASE_URL = 'https://kmixbxcaoxcrfwigcnax.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_mtYDBlxE7l4-D31AmaSsKw_rOD7Sp-K';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 AOS.init({ duration: 800, easing: 'ease-out-cubic', once: true, offset: 60 });
 
 // VIEW 라우팅
@@ -648,20 +654,39 @@ async function submitForm(e, eventName){
   submitBtn.innerHTML = '<span>신청 중...</span>';
 
   const data = {
-    id: 'C' + Date.now() + Math.floor(Math.random()*100),
+    name, phone,
+    event: eventName,
+    option: option || null
+  };
+
+  // 1) Supabase 저장
+  let savedRow = null;
+  try{
+    const { data: row, error } = await sb.from('inquiries').insert([data]).select().single();
+    if(error){
+      console.error('Supabase 저장 실패:', error);
+      showToast('일시적 오류가 발생했습니다. 다시 시도해주세요.','error');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<span>상담 신청</span>';
+      return false;
+    }
+    savedRow = row;
+  }catch(err){
+    console.error('Supabase 통신 오류:', err);
+    // 네트워크 오류 시에도 일단 진행 (텔레그램으로 백업)
+  }
+
+  // 2) 텔레그램 알림
+  const telegramData = {
+    id: savedRow ? ('C' + savedRow.id) : ('T' + Date.now()),
     name, phone,
     event: eventName,
     option: option,
-    time: new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }),
-    timestamp: Date.now()
+    time: new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })
   };
+  const tgRes = await sendTelegram(telegramData);
 
-  const list = JSON.parse(localStorage.getItem('cellize_inquiries') || '[]');
-  list.unshift(data);
-  localStorage.setItem('cellize_inquiries', JSON.stringify(list));
-
-  const tgRes = await sendTelegram(data);
-
+  // 3) 완료 처리
   setTimeout(() => {
     submitBtn.disabled = false;
     submitBtn.innerHTML = '<span>상담 신청</span>';
@@ -670,7 +695,7 @@ async function submitForm(e, eventName){
     if(!tgRes.ok && tgRes.reason !== 'no_config'){
       console.warn('텔레그램 전송 실패. 어드민에서 설정 확인 필요.');
     }
-  }, 600);
+  }, 400);
 
   return false;
 }
