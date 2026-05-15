@@ -139,8 +139,34 @@ a{color:inherit;text-decoration:none}
 .compare-card-price{font-size:24px;font-weight:800;color:var(--event1-color);letter-spacing:-0.02em;line-height:1;white-space:nowrap}
 .compare-card-price em{font-style:normal;font-size:14px;font-weight:700;margin-left:1px}
 .compare-card-price-tilde{font-size:18px;color:var(--text-sub);font-weight:600;margin-left:2px}
-.compare-card-arrow{margin-top:10px;font-size:11px;color:var(--text-sub);font-weight:600;letter-spacing:0.05em;display:flex;align-items:center;justify-content:flex-end;gap:4px}
-.compare-card-arrow::after{content:"→";font-size:14px;font-weight:700}
+.compare-card-arrow{
+  margin-top:10px;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:11px 18px;
+  background:linear-gradient(135deg,#B8924E 0%,#D9A852 50%,#B8924E 100%);
+  background-size:200% 100%;
+  color:#fff;
+  border-radius:30px;
+  font-size:13px;font-weight:800;letter-spacing:-0.01em;
+  box-shadow:0 4px 14px rgba(184,146,78,0.45),inset 0 1px 0 rgba(255,255,255,0.3);
+  border:1.5px solid rgba(255,255,255,0.3);
+  position:relative;overflow:hidden;
+  animation:cardBtnShine 3s linear infinite, cardBtnPulse 1.8s ease-in-out infinite;
+  white-space:nowrap;
+}
+.compare-card-arrow::before{
+  content:"";position:absolute;top:0;left:-100%;width:50%;height:100%;
+  background:linear-gradient(120deg,transparent,rgba(255,255,255,0.6),transparent);
+  animation:cardBtnShimmer 2.4s ease-in-out infinite;
+}
+.compare-card-arrow::after{
+  content:"→";font-size:14px;font-weight:700;color:#fff;
+  position:relative;z-index:2;
+}
+.compare-card-arrow > span{position:relative;z-index:2;text-shadow:0 1px 1px rgba(120,90,40,0.3)}
+@keyframes cardBtnShine{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+@keyframes cardBtnPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes cardBtnShimmer{0%{left:-100%}60%,100%{left:200%}}
 
 /* EVENT 상세 뷰 */
 .event-detail{padding:0;background:#fff}
@@ -358,7 +384,7 @@ a{color:inherit;text-decoration:none}
           <div class="compare-card-right">
             <div class="compare-card-price-label">이벤트가</div>
             <div class="compare-card-price">55<em>만원</em><span class="compare-card-price-tilde">~</span></div>
-            <div class="compare-card-arrow">신청하기</div>
+            <div class="compare-card-arrow"><span>신청하기</span></div>
           </div>
         </div>
       </div>
@@ -378,7 +404,7 @@ a{color:inherit;text-decoration:none}
           <div class="compare-card-right">
             <div class="compare-card-price-label">이벤트가</div>
             <div class="compare-card-price">150<em>만원</em><span class="compare-card-price-tilde">~</span></div>
-            <div class="compare-card-arrow">신청하기</div>
+            <div class="compare-card-arrow"><span>신청하기</span></div>
           </div>
         </div>
       </div>
